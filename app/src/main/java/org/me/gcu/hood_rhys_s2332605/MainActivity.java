@@ -20,9 +20,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -58,6 +63,31 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         new Thread(new Task(urlSource)).start();
     } //
 
+    private void parseData(String dataToParse){
+        try{
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput( new StringReader( dataToParse ));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT){
+                if (eventType == XmlPullParser.START_TAG){
+                    if (xpp.getName().equalsIgnoreCase("Channel")){
+                        Log.d("Data Parsing", "Weather Report Found");
+                    }
+                    else if {
+
+                    }
+                }
+            }
+        }
+        catch (XmlPullParserException ae1){
+            Log.e("Data Parsing","Parsing error" + ae1.toString());
+        }
+        catch(IOException ae1){
+            Log.e("Data Parsing", "IO error during parsing");
+        }
+    }
     // Need separate thread to access the internet resource over network
     // Other neater solutions should be adopted in later iterations.
     private class Task implements Runnable
