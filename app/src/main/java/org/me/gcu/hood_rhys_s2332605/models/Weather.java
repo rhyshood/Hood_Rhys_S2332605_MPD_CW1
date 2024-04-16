@@ -1,8 +1,13 @@
 package org.me.gcu.hood_rhys_s2332605.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.util.Date;
 
-public class Weather {
+public class Weather implements Parcelable {
     // Attributes
     private String minTemp;
     private String maxTemp;
@@ -17,6 +22,33 @@ public class Weather {
     private String sunrise;
     private String sunset;
     private Date date;
+
+    protected Weather(Parcel in) {
+        minTemp = in.readString();
+        maxTemp = in.readString();
+        forecast = in.readString();
+        windDirection = in.readString();
+        windSpeed = in.readString();
+        visibility = in.readString();
+        airPressure = in.readString();
+        humidity = in.readString();
+        uvRisk = in.readString();
+        pollution = in.readString();
+        sunrise = in.readString();
+        sunset = in.readString();
+    }
+
+    public static final Creator<Weather> CREATOR = new Creator<Weather>() {
+        @Override
+        public Weather createFromParcel(Parcel in) {
+            return new Weather(in);
+        }
+
+        @Override
+        public Weather[] newArray(int size) {
+            return new Weather[size];
+        }
+    };
 
     // Getters
     public String getMinTemp(){
@@ -126,5 +158,26 @@ public class Weather {
         sunset = sunsetIn;
         sunrise = sunriseIn;
         date = dateIn;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(minTemp);
+        dest.writeString(maxTemp);
+        dest.writeString(forecast);
+        dest.writeString(windDirection);
+        dest.writeString(windSpeed);
+        dest.writeString(visibility);
+        dest.writeString(airPressure);
+        dest.writeString(humidity);
+        dest.writeString(uvRisk);
+        dest.writeString(pollution);
+        dest.writeString(sunrise);
+        dest.writeString(sunset);
     }
 }

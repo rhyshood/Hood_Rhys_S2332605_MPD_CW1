@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DetailedViewModel extends AppCompatActivity implements OnClickListener {
+    private TextView maxTempTxt;
     private Button returnBtn;
     private Button locationRightButton;
     private String[] locationNames = {"Glasgow", "London", "New York", "Oman", "Mauritius", "Bangladesh"};
@@ -43,13 +44,19 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detailed_view);
         Bundle bundle = getIntent().getExtras();
-        if(bundle == null)
+        if(bundle == null) {
             selectedIndex = 0;
-        else
+        }else {
             selectedIndex = bundle.getInt("selectedIndex");
+            threeDayWeather = (ThreeDayWeather) getIntent().getExtras().getParcelable("threeDayWeather");
+            threeDayWeather.setFirstDay((Weather) getIntent().getExtras().getParcelable("dayOne"));
+            threeDayWeather.setSecondDay((Weather) getIntent().getExtras().getParcelable("dayTwo"));
+            threeDayWeather.setThirdDay((Weather) getIntent().getExtras().getParcelable("dayThree"));
+        }
         TextView locationName = (TextView)findViewById(R.id.locationNameTxt);
         locationName.setText(locationNames[selectedIndex]);
-
+        maxTempTxt = (TextView)findViewById(R.id.maxTempTxt);
+        maxTempTxt.setText(threeDayWeather.getFirstDay().getMaxTemp());
         returnBtn = (Button)findViewById(R.id.returnBtn);
         returnBtn.setOnClickListener(this);
 
@@ -69,9 +76,9 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         if (v == returnBtn) {
             Bundle bundle = new Bundle();
             bundle.putInt("selectedIndex",selectedIndex);
-            Intent startActivity2 = new Intent(DetailedViewModel.this, ThreeDayViewModel.class);
-            startActivity2.putExtras(bundle);
-            startActivity(startActivity2);
+            Intent startThreeDayView = new Intent(DetailedViewModel.this, ThreeDayViewModel.class);
+            startThreeDayView.putExtras(bundle);
+            startActivity(startThreeDayView);
         }
     }
 

@@ -92,7 +92,7 @@
                         android:text="Minimum Temperature:" />
 
                     <TextView
-                        android:id="@+id/MaxTempTxt"
+                        android:id="@+id/maxTempTxt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Maximum Temperature:" />
