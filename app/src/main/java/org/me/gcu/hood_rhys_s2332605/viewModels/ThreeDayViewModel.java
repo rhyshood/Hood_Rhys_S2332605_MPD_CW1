@@ -40,6 +40,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -49,8 +51,13 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     private TextView locationNameTxt;
     private TextView minTempTxtOne;
     private TextView maxTempTxtOne;
+    private TextView dateOne;
     private TextView maxTempTxtTwo;
+    private TextView minTempTxtTwo;
+    private TextView dateTwo;
     private TextView maxTempTxtThree;
+    private TextView minTempTxtThree;
+    private TextView dateThree;
 
     // Initialise Buttons
     private Button locationLeftButton;
@@ -84,17 +91,26 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         locationLeftButton.setOnClickListener(this);
         locationRightButton = (Button)findViewById(R.id.locationRightBtn);
         locationRightButton.setOnClickListener(this);
+
         dayOneBtn = (Button)findViewById(R.id.dayOneBtn);
         dayOneBtn.setOnClickListener(this);
         dayTwoBtn = (Button)findViewById(R.id.dayTwoBtn);
         dayTwoBtn.setOnClickListener(this);
         dayThreeBtn = (Button)findViewById(R.id.dayThreeBtn);
         dayThreeBtn.setOnClickListener(this);
-        maxTempTxtOne = (TextView) findViewById(R.id.dayOneMaxTempTxt);
-        maxTempTxtTwo = (TextView) findViewById(R.id.dayTwoMaxTempTxt);
-        maxTempTxtThree = (TextView) findViewById(R.id.dayThreeMaxTempTxt);
+        maxTempTxtOne = findViewById(R.id.dayOneMaxTempTxt);
+        maxTempTxtTwo = findViewById(R.id.dayTwoMaxTempTxt);
+        maxTempTxtThree = findViewById(R.id.dayThreeMaxTempTxt);
+        minTempTxtOne = findViewById(R.id.dayOneMinTempTxt);
+        minTempTxtTwo = findViewById(R.id.dayTwoMinTempTxt);
+        minTempTxtThree = findViewById(R.id.dayThreeMinTempTxt);
+
         Toolbar myToolbar=(Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
+        dateOne = findViewById(R.id.dayOneDateTxt);
+        dateTwo = findViewById(R.id.dayTwoDateTxt);
+        dateThree = findViewById(R.id.dayThreeDateTxt);
 
 
     }
@@ -115,6 +131,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
        } else if (v == dayOneBtn || v == dayTwoBtn || v == dayThreeBtn) {
            Bundle bundle = new Bundle();
            bundle.putInt("selectedIndex",selectedIndex);
+           bundle.putInt("selectedDay",1);
            Intent startDetailedView = new Intent(ThreeDayViewModel.this, DetailedViewModel.class);
            startDetailedView.putExtras(bundle);
            startDetailedView.putExtra("threeDayWeather",threeDayWeather);
@@ -255,6 +272,12 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         maxTempTxtOne.setText(threeDayWeather.getFirstDay().getMaxTemp());
         maxTempTxtTwo.setText(threeDayWeather.getSecondDay().getMaxTemp());
         maxTempTxtThree.setText(threeDayWeather.getThirdDay().getMaxTemp());
+        minTempTxtOne.setText(threeDayWeather.getFirstDay().getMinTemp());
+        minTempTxtTwo.setText(threeDayWeather.getSecondDay().getMinTemp());
+        minTempTxtThree.setText(threeDayWeather.getThirdDay().getMinTemp());
+        dateOne.setText(threeDayWeather.getFirstDay().getFormattedDate());
+        dateTwo.setText(threeDayWeather.getSecondDay().getFormattedDate());
+        dateThree.setText(threeDayWeather.getThirdDay().getFormattedDate());
     }
     private void createThreeDayWeatherClass(String dataInput) {
         Log.d("Data Parsing", "Creating Three Day Weather Class");

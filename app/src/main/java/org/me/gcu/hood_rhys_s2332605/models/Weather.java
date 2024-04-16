@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Weather implements Parcelable {
@@ -36,6 +37,7 @@ public class Weather implements Parcelable {
         pollution = in.readString();
         sunrise = in.readString();
         sunset = in.readString();
+        date = (java.util.Date) in.readSerializable();
     }
 
     public static final Creator<Weather> CREATOR = new Creator<Weather>() {
@@ -72,7 +74,7 @@ public class Weather implements Parcelable {
     public String getAirPressure(){
         return airPressure;
     }
-    public String humidity(){
+    public String getHumidity(){
         return humidity;
     }
     public String getUVRisk(){
@@ -179,5 +181,10 @@ public class Weather implements Parcelable {
         dest.writeString(pollution);
         dest.writeString(sunrise);
         dest.writeString(sunset);
+        dest.writeSerializable(date);
+    }
+
+    public String getFormattedDate(){
+        return new SimpleDateFormat("E dd MMM").format(date);
     }
 }
