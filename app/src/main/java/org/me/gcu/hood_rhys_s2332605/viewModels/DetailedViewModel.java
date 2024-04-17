@@ -67,10 +67,10 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         }else {
             selectedIndex = bundle.getInt("selectedIndex");
             selectedDay = getIntent().getExtras().getInt("selectedDay");
-            threeDayWeather = (ThreeDayWeather) getIntent().getExtras().getParcelable("threeDayWeather");
-            threeDayWeather.setFirstDay((Weather) getIntent().getExtras().getParcelable("dayOne"));
-            threeDayWeather.setSecondDay((Weather) getIntent().getExtras().getParcelable("dayTwo"));
-            threeDayWeather.setThirdDay((Weather) getIntent().getExtras().getParcelable("dayThree"));
+            threeDayWeather = getIntent().getExtras().getParcelable("threeDayWeather");
+            threeDayWeather.setFirstDay(getIntent().getExtras().getParcelable("dayOne"));
+            threeDayWeather.setSecondDay(getIntent().getExtras().getParcelable("dayTwo"));
+            threeDayWeather.setThirdDay(getIntent().getExtras().getParcelable("dayThree"));
         }
         TextView locationName = findViewById(R.id.locationNameTxt);
         locationName.setText(locationNames[selectedIndex]);

@@ -44,7 +44,7 @@ public class RSSManager {
             return false;
         }
     }
-    private Weather splitWeatherData(Weather temp, String forecast){
+    private void splitWeatherData(Weather temp, String forecast){
         String[] arr = forecast.split(",");
         int index = 0;
         if (verifyDataExistence(1, forecast)){
@@ -122,7 +122,6 @@ public class RSSManager {
         } else {
             temp.setSunset("Sunset: Error");
         }
-        return temp;
     }
 
     public ThreeDayWeather createThreeDayWeatherClass(String dataInput) {
@@ -186,6 +185,4 @@ public class RSSManager {
         }
         return threeDayWeather;
     }
-
-
 }

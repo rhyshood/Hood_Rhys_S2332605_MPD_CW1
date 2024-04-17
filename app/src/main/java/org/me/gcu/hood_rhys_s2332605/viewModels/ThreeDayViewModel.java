@@ -31,9 +31,6 @@ import org.me.gcu.hood_rhys_s2332605.R;
 import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
 import org.me.gcu.hood_rhys_s2332605.models.Weather;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,14 +38,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 public class ThreeDayViewModel extends AppCompatActivity implements OnClickListener
 {
-    private final RSSManager rssManager = new RSSManager();
+    private RSSManager rssManager = new RSSManager();
     // Initialise Text Views
     private TextView locationNameTxt;
     private TextView minTempTxtOne;
@@ -112,8 +105,19 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
        } else if (v == locationRightButton){
             updateLocation(1);
        } else if (v == dayOneBtn || v == dayTwoBtn || v == dayThreeBtn) {
+           String id = getResources().getResourceName(v.getId());
+           id = id.substring(id.lastIndexOf("/") + 1);
+
            Bundle bundle = new Bundle();
            bundle.putInt("selectedIndex",selectedIndex);
+           switch(id){
+               case "dayOneBtn":
+                   bundle.putInt("selectedDay",1);
+               case "dayTwoBtn":
+                   bundle.putInt("selectedDay",2);
+               case "dayThreeBtn":
+                   bundle.putInt("selectedDay",3);
+           }
            bundle.putInt("selectedDay",1);
            Intent startDetailedView = new Intent(ThreeDayViewModel.this, DetailedViewModel.class);
            startDetailedView.putExtras(bundle);
