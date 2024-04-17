@@ -28,6 +28,7 @@ import android.widget.ViewFlipper;
 import androidx.appcompat.widget.Toolbar;
 
 import org.me.gcu.hood_rhys_s2332605.R;
+import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
 import org.me.gcu.hood_rhys_s2332605.models.Weather;
 import org.xmlpull.v1.XmlPullParser;
@@ -47,6 +48,7 @@ import java.util.Date;
 
 public class ThreeDayViewModel extends AppCompatActivity implements OnClickListener
 {
+    private final RSSManager rssManager = new RSSManager();
     // Initialise Text Views
     private TextView locationNameTxt;
     private TextView minTempTxtOne;
@@ -87,30 +89,11 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
             selectedIndex = bundle.getInt("selectedIndex");
         // Set up the raw links to the graphical components
         updateLocation(0);
-        locationLeftButton = (Button)findViewById(R.id.locationLeftBtn);
-        locationLeftButton.setOnClickListener(this);
-        locationRightButton = (Button)findViewById(R.id.locationRightBtn);
-        locationRightButton.setOnClickListener(this);
-
-        dayOneBtn = (Button)findViewById(R.id.dayOneBtn);
-        dayOneBtn.setOnClickListener(this);
-        dayTwoBtn = (Button)findViewById(R.id.dayTwoBtn);
-        dayTwoBtn.setOnClickListener(this);
-        dayThreeBtn = (Button)findViewById(R.id.dayThreeBtn);
-        dayThreeBtn.setOnClickListener(this);
-        maxTempTxtOne = findViewById(R.id.dayOneMaxTempTxt);
-        maxTempTxtTwo = findViewById(R.id.dayTwoMaxTempTxt);
-        maxTempTxtThree = findViewById(R.id.dayThreeMaxTempTxt);
-        minTempTxtOne = findViewById(R.id.dayOneMinTempTxt);
-        minTempTxtTwo = findViewById(R.id.dayTwoMinTempTxt);
-        minTempTxtThree = findViewById(R.id.dayThreeMinTempTxt);
-
-        Toolbar myToolbar=(Toolbar)findViewById(R.id.toolbar);
+        findElements();
+        setListeners();
+        Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        dateOne = findViewById(R.id.dayOneDateTxt);
-        dateTwo = findViewById(R.id.dayTwoDateTxt);
-        dateThree = findViewById(R.id.dayThreeDateTxt);
 
 
     }
@@ -143,7 +126,31 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     }
 
     private void findElements(){
+        // Text Views
+        maxTempTxtOne = findViewById(R.id.dayOneMaxTempTxt);
+        maxTempTxtTwo = findViewById(R.id.dayTwoMaxTempTxt);
+        maxTempTxtThree = findViewById(R.id.dayThreeMaxTempTxt);
+        minTempTxtOne = findViewById(R.id.dayOneMinTempTxt);
+        minTempTxtTwo = findViewById(R.id.dayTwoMinTempTxt);
+        minTempTxtThree = findViewById(R.id.dayThreeMinTempTxt);
+        dateOne = findViewById(R.id.dayOneDateTxt);
+        dateTwo = findViewById(R.id.dayTwoDateTxt);
+        dateThree = findViewById(R.id.dayThreeDateTxt);
 
+        // Buttons
+        dayOneBtn = findViewById(R.id.dayOneBtn);
+        dayTwoBtn = findViewById(R.id.dayTwoBtn);
+        dayThreeBtn = findViewById(R.id.dayThreeBtn);
+        locationLeftButton = findViewById(R.id.locationLeftBtn);
+        locationRightButton = findViewById(R.id.locationRightBtn);
+    }
+
+    private void setListeners(){
+        locationLeftButton.setOnClickListener(this);
+        locationRightButton.setOnClickListener(this);
+        dayOneBtn.setOnClickListener(this);
+        dayTwoBtn.setOnClickListener(this);
+        dayThreeBtn.setOnClickListener(this);
     }
 
     private void updateLocation(int change){
@@ -160,114 +167,6 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         new Thread(new Task("https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/" + locationIDs[selectedIndex])).start();
     }
 
-    private boolean verifyDataExistence(int dataIndex, String forecast){
-        if (dataIndex == 1){
-            return forecast.contains("Maximum Temperature");
-        } else if (dataIndex == 2){
-            return forecast.contains("Minimum Temperature");
-        } else if (dataIndex == 3){
-            return forecast.contains("Wind Direction");
-        } else if (dataIndex == 4){
-            return forecast.contains("Wind Speed");
-        } else if (dataIndex == 5){
-            return forecast.contains("Visibility");
-        } else if (dataIndex == 6){
-            return forecast.contains("Pressure");
-        } else if (dataIndex == 7){
-            return forecast.contains("Humidity");
-        } else if (dataIndex == 8){
-            return forecast.contains("UV Risk");
-        } else if (dataIndex == 9){
-            return forecast.contains("Pollution");
-        } else if (dataIndex == 10){
-            return forecast.contains("Sunrise");
-        } else if (dataIndex == 11){
-            return forecast.contains("Sunset");
-        } else {
-            return false;
-        }
-    }
-    private Weather splitWeatherData(Weather temp, String forecast){
-        String[] arr = forecast.split(",");
-        int index = 0;
-        if (verifyDataExistence(1, forecast)){
-            temp.setMaxTemp(arr[index]);
-            index++;
-        } else {
-            temp.setMaxTemp("Maximum Temperature: Error");
-        }
-
-        if (verifyDataExistence(2, forecast)){
-            temp.setMinTemp(arr[index]);
-            index++;
-        } else {
-            temp.setMinTemp("Minimum Temperature: Error");
-        }
-
-        if (verifyDataExistence(3, forecast)){
-            temp.setWindDirection(arr[index]);
-            index++;
-        } else {
-            temp.setWindDirection("WindDirection: Error");
-        }
-
-        if (verifyDataExistence(4, forecast)){
-            temp.setWindSpeed(arr[index]);
-            index++;
-        } else {
-            temp.setWindSpeed("Wind Speed: Error");
-        }
-
-        if (verifyDataExistence(5, forecast)){
-            temp.setVisibility(arr[index]);
-            index++;
-        } else {
-            temp.setVisibility("Visibility: Error");
-        }
-
-        if (verifyDataExistence(6, forecast)){
-            temp.setAirPressure(arr[index]);
-            index++;
-        } else {
-            temp.setAirPressure("Pressure: Error");
-        }
-
-        if (verifyDataExistence(7, forecast)){
-            temp.setHumidity(arr[index]);
-            index++;
-        } else {
-            temp.setHumidity("Humidity: Error");
-        }
-
-        if (verifyDataExistence(8, forecast)){
-            temp.setUVRisk(arr[index]);
-            index++;
-        } else {
-            temp.setUVRisk("UV Risk: Error");
-        }
-
-        if (verifyDataExistence(9, forecast)){
-            temp.setPollution(arr[index]);
-            index++;
-        } else {
-            temp.setPollution("Pollution: Error");
-        }
-
-        if (verifyDataExistence(10, forecast)){
-            temp.setSunrise(arr[index]);
-            index++;
-        } else {
-            temp.setSunrise("Sunrise: Error");
-        }
-
-        if (verifyDataExistence(11, forecast)){
-            temp.setSunset(arr[index]);
-        } else {
-            temp.setSunset("Sunset: Error");
-        }
-        return temp;
-    }
-
     private void displayThreeDayWeather(){
         maxTempTxtOne.setText(threeDayWeather.getFirstDay().getMaxTemp());
         maxTempTxtTwo.setText(threeDayWeather.getSecondDay().getMaxTemp());
@@ -279,69 +178,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         dateTwo.setText(threeDayWeather.getSecondDay().getFormattedDate());
         dateThree.setText(threeDayWeather.getThirdDay().getFormattedDate());
     }
-    private void createThreeDayWeatherClass(String dataInput) {
-        Log.d("Data Parsing", "Creating Three Day Weather Class");
-        int dayNumber = 0;
-        Weather temp = new Weather();
-        threeDayWeather = new ThreeDayWeather();
-        boolean readingItem = false;
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(new StringReader(dataInput.replace("&","&amp;")));
-            int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (xpp.getName().equalsIgnoreCase("Item")) {
-                        Log.d("Data Parsing", "Item found");
-                        readingItem = true;
-                        dayNumber += 1;
-                        temp = new Weather();
-                        Date dt = new Date();
-                        Calendar c = Calendar.getInstance();
-                        c.setTime(dt);
-                        c.add(Calendar.DATE, dayNumber - 1);
-                        temp.setDate(c.getTime());
-                    } else if (xpp.getName().equalsIgnoreCase("Title")) {
-                        if(readingItem) {
-                            Log.d("Data Parsing", "Found Weather Title");
-                            temp.setForecast(xpp.nextText().split(",")[0]);
-                        }
-                    } else if (xpp.getName().equalsIgnoreCase("Description")) {
-                        if(readingItem) {
-                            Log.d("Data Parsing", "Found Weather Details");
-                            splitWeatherData(temp, xpp.nextText());
-                            if (dayNumber == 1) {
-                                threeDayWeather.setFirstDay(temp);
-                            } else if (dayNumber == 2) {
-                                threeDayWeather.setSecondDay(temp);
-                            } else if (dayNumber == 3) {
-                                threeDayWeather.setThirdDay(temp);
-                            }
-                        }
-                    } else if (xpp.getName().equalsIgnoreCase("Point")) {
-                        if(readingItem) {
-                            Log.d("Data Parsing", "Found Location Coordinates");
-                            threeDayWeather.setCoordinates(xpp.nextText());
-                        }
-                    }
 
-                } else if(eventType == XmlPullParser.END_TAG){
-                    if (xpp.getName().equalsIgnoreCase("Item")) {
-                        Log.d("Data Parsing", "Finished Item");
-                        readingItem = false;
-                    }
-                }
-                eventType = xpp.next();
-            }
-            displayThreeDayWeather();
-        } catch (XmlPullParserException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        // Need separate thread to access the internet resource over network
-        // Other neater solutions should be adopted in later iterations.
-    }
     private class Task implements Runnable {
         private String url;
 
@@ -378,7 +215,8 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
             int i = result.indexOf(">");
             result = result.substring(i + 1);
             Log.e("MyTag - cleaned", result);
-            createThreeDayWeatherClass(result);
+            threeDayWeather = rssManager.createThreeDayWeatherClass(result);
+            displayThreeDayWeather();
 
 
             //
