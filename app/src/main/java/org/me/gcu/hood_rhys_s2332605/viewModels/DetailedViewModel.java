@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -50,6 +51,9 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
     private Button returnBtn;
     private Button dateRightBtn;
     private Button dateLeftBtn;
+
+    // Misc
+    private ImageView forecastImg;
     private String[] locationNames = {"Glasgow", "London", "New York", "Oman", "Mauritius", "Bangladesh"};
     private String[] locationIDs = {"2648579", "2643743", "5128581", "287286", "934154", "1185241"};
     private int selectedIndex = 0;
@@ -127,13 +131,18 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         sunsetTxt = findViewById(R.id.sunsetTxt);
         dateTxt = findViewById(R.id.dateTxt);
 
-
         // Buttons
         dateLeftBtn = findViewById(R.id.dateLeftBtn);
         dateRightBtn = findViewById(R.id.dateRightBtn);
         returnBtn = findViewById(R.id.returnBtn);
+
+        // Misc
+        forecastImg = findViewById(R.id.forecastImg);
     }
 
+    private int getResID(String iconName){
+        return getResources().getIdentifier(iconName , "drawable", getPackageName());
+    }
     private void displayData(){
         maxTempTxt.setText(currentWeather.getMaxTemp());
         minTempTxt.setText(currentWeather.getMinTemp());
@@ -147,6 +156,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         sunriseTxt.setText(currentWeather.getSunrise());
         sunsetTxt.setText(currentWeather.getSunset());
         dateTxt.setText(currentWeather.getFormattedDate());
+        forecastImg.setImageResource(getResID(currentWeather.getForecastImage()));
 
     }
 

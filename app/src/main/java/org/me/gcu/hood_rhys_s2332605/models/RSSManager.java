@@ -17,6 +17,21 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class RSSManager {
+
+    private void fetchForecastImage(Weather temp, String forecast){
+        forecast = forecast.split(": ")[1];
+        if (forecast.equalsIgnoreCase("Light Cloud")){
+            temp.setForecastImage("day_partial_cloud");
+        } else if (forecast.contains("Cloudy")){
+            temp.setForecastImage("cloudy");
+        } else if (forecast.contains("Rain")){
+            temp.setForecastImage("day_rain");
+        } else if (forecast.contains("Snow")){
+            temp.setForecastImage("day_snow");
+        } else {
+            temp.setForecastImage("cloudy");
+        }
+    }
     private boolean verifyDataExistence(int dataIndex, String forecast){
         if (dataIndex == 1){
             return forecast.contains("Maximum Temperature");
@@ -151,7 +166,9 @@ public class RSSManager {
                     } else if (xpp.getName().equalsIgnoreCase("Title")) {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Weather Title");
-                            temp.setForecast(xpp.nextText().split(",")[0]);
+                            String forecast = xpp.nextText().split(",")[0];
+                            temp.setForecast(forecast);
+                            fetchForecastImage(temp, forecast);
                         }
                     } else if (xpp.getName().equalsIgnoreCase("Description")) {
                         if(readingItem) {

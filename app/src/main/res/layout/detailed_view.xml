@@ -73,7 +73,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/dayOneImg"
+                    android:id="@+id/forecastImg"
                     android:layout_width="302dp"
                     android:layout_height="142dp"
                     android:layout_weight="1"

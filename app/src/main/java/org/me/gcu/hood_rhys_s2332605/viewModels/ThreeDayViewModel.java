@@ -22,10 +22,12 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import org.me.gcu.hood_rhys_s2332605.R;
 import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
@@ -61,6 +63,11 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     private Button dayTwoBtn;
     private Button dayThreeBtn;
 
+    // Initialise Images
+    private ImageView dayOneImg;
+    private ImageView dayTwoImg;
+    private ImageView dayThreeImg;
+
     // Initialise Variables
     private String[] locationNames = {"Glasgow","London","New York","Oman","Mauritius","Bangladesh"};
     private String[] locationIDs = {"2648579","2643743","5128581","287286","934154","1185241"};
@@ -88,7 +95,6 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         setSupportActionBar(myToolbar);
 
 
-
     }
 
     @Override
@@ -113,14 +119,17 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
            switch(id){
                case "dayOneBtn":
                    bundle.putInt("selectedDay",1);
+                   break;
                case "dayTwoBtn":
                    bundle.putInt("selectedDay",2);
+                   break;
                case "dayThreeBtn":
                    bundle.putInt("selectedDay",3);
+                   break;
            }
-           bundle.putInt("selectedDay",1);
            Intent startDetailedView = new Intent(ThreeDayViewModel.this, DetailedViewModel.class);
            startDetailedView.putExtras(bundle);
+
            startDetailedView.putExtra("threeDayWeather",threeDayWeather);
            startDetailedView.putExtra("dayOne",threeDayWeather.getFirstDay());
            startDetailedView.putExtra("dayTwo",threeDayWeather.getSecondDay());
@@ -147,6 +156,11 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         dayThreeBtn = findViewById(R.id.dayThreeBtn);
         locationLeftButton = findViewById(R.id.locationLeftBtn);
         locationRightButton = findViewById(R.id.locationRightBtn);
+
+        // Images
+        dayOneImg = findViewById(R.id.dayOneImg);
+        dayTwoImg = findViewById(R.id.dayTwoImg);
+        dayThreeImg = findViewById(R.id.dayThreeImg);
     }
 
     private void setListeners(){
@@ -171,16 +185,34 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         new Thread(new Task("https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/" + locationIDs[selectedIndex])).start();
     }
 
+    private int getResID(String iconName){
+        return getResources().getIdentifier(iconName , "drawable", getPackageName());
+    }
     private void displayThreeDayWeather(){
-        maxTempTxtOne.setText(threeDayWeather.getFirstDay().getMaxTemp());
-        maxTempTxtTwo.setText(threeDayWeather.getSecondDay().getMaxTemp());
-        maxTempTxtThree.setText(threeDayWeather.getThirdDay().getMaxTemp());
-        minTempTxtOne.setText(threeDayWeather.getFirstDay().getMinTemp());
-        minTempTxtTwo.setText(threeDayWeather.getSecondDay().getMinTemp());
-        minTempTxtThree.setText(threeDayWeather.getThirdDay().getMinTemp());
-        dateOne.setText(threeDayWeather.getFirstDay().getFormattedDate());
-        dateTwo.setText(threeDayWeather.getSecondDay().getFormattedDate());
-        dateThree.setText(threeDayWeather.getThirdDay().getFormattedDate());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Display Max Temperatures
+                maxTempTxtOne.setText(threeDayWeather.getFirstDay().getMaxTemp());
+                maxTempTxtTwo.setText(threeDayWeather.getSecondDay().getMaxTemp());
+                maxTempTxtThree.setText(threeDayWeather.getThirdDay().getMaxTemp());
+
+                // Display Min Temperatures
+                minTempTxtOne.setText(threeDayWeather.getFirstDay().getMinTemp());
+                minTempTxtTwo.setText(threeDayWeather.getSecondDay().getMinTemp());
+                minTempTxtThree.setText(threeDayWeather.getThirdDay().getMinTemp());
+
+                // Display Dates
+                dateOne.setText(threeDayWeather.getFirstDay().getFormattedDate());
+                dateTwo.setText(threeDayWeather.getSecondDay().getFormattedDate());
+                dateThree.setText(threeDayWeather.getThirdDay().getFormattedDate());
+
+                // Display Images
+                dayOneImg.setImageResource(getResID(threeDayWeather.getFirstDay().getForecastImage()));
+                dayTwoImg.setImageResource(getResID(threeDayWeather.getSecondDay().getForecastImage()));
+                dayThreeImg.setImageResource(getResID(threeDayWeather.getThirdDay().getForecastImage()));
+            }
+        });
     }
 
     private class Task implements Runnable {
