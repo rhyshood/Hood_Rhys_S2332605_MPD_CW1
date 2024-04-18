@@ -247,7 +247,7 @@ public class RSSManager {
         }
         return threeDayWeather;
     }
-
+    // CREATES WEATHER CLASS USING LATEST OBSERVATION DATA
     public Weather createWeatherClass(String locationID) {
         String dataInput = getDataString(true, locationID);
         Log.d("Data Parsing", "Creating Single Weather Class");
