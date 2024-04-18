@@ -62,6 +62,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     private Button dayOneBtn;
     private Button dayTwoBtn;
     private Button dayThreeBtn;
+    private Button returnBtn;
 
     // Initialise Images
     private ImageView dayOneImg;
@@ -104,13 +105,15 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         return true;
     }
 
-    public void onClick(View v)
-    {
-       if (v == locationLeftButton){
+    public void onClick(View v) {
+        if (v == locationLeftButton) {
             updateLocation(-1);
-       } else if (v == locationRightButton){
+        } else if (v == locationRightButton) {
             updateLocation(1);
-       } else if (v == dayOneBtn || v == dayTwoBtn || v == dayThreeBtn) {
+        } else if (v == returnBtn){
+            Intent startMainMenu = new Intent(ThreeDayViewModel.this, MainMenuViewModel.class);
+            startActivity(startMainMenu);
+        } else if (v == dayOneBtn || v == dayTwoBtn || v == dayThreeBtn) {
            String id = getResources().getResourceName(v.getId());
            id = id.substring(id.lastIndexOf("/") + 1);
 
@@ -156,6 +159,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         dayThreeBtn = findViewById(R.id.dayThreeBtn);
         locationLeftButton = findViewById(R.id.locationLeftBtn);
         locationRightButton = findViewById(R.id.locationRightBtn);
+        returnBtn = findViewById(R.id.returnBtn);
 
         // Images
         dayOneImg = findViewById(R.id.dayOneImg);
@@ -169,6 +173,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         dayOneBtn.setOnClickListener(this);
         dayTwoBtn.setOnClickListener(this);
         dayThreeBtn.setOnClickListener(this);
+        returnBtn.setOnClickListener(this);
     }
 
     private void updateLocation(int change){
@@ -253,23 +258,6 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
             Log.e("MyTag - cleaned", result);
             threeDayWeather = rssManager.createThreeDayWeatherClass(result);
             displayThreeDayWeather();
-
-
-            //
-            // Now that you have the xml data you can parse it
-            //
-
-
-            // Now update the TextView to display raw XML data
-            // Probably not the best way to update TextView
-            // but we are just getting started !
-
-            ThreeDayViewModel.this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Log.d("UI thread", "I am the UI thread");
-                    //rawDataDisplay.setText(threeDayWeather.getFirstDay().getMaxTemp());
-                }
-            });
         }
 
     }

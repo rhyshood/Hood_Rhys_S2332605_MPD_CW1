@@ -78,6 +78,8 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         }
         TextView locationName = findViewById(R.id.locationNameTxt);
         locationName.setText(locationNames[selectedIndex]);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
         assignElements();
         assignListeners();
         updateCurrentWeather(selectedDay);

@@ -13,7 +13,6 @@ public class ThreeDayWeather implements Parcelable {
     private Weather firstDay;
     private Weather secondDay;
     private Weather thirdDay;
-    private String coordinates;
 
     protected ThreeDayWeather(Parcel in) {
     }
@@ -40,7 +39,6 @@ public class ThreeDayWeather implements Parcelable {
     public Weather getThirdDay(){
         return thirdDay;
     }
-    public String getCoordinates(){return coordinates;}
 
     // Setters
     public void setFirstDay(Weather firstDayIn){
@@ -54,9 +52,6 @@ public class ThreeDayWeather implements Parcelable {
     public void setThirdDay(Weather thirdDayIn){
         thirdDay = thirdDayIn;
     }
-    public void setCoordinates(String coordinatesIn){
-        coordinates = coordinatesIn;
-    }
 
     // Constructors
     // Zero Parameter Constructor
@@ -64,7 +59,6 @@ public class ThreeDayWeather implements Parcelable {
         firstDay = new Weather();
         secondDay = new Weather();
         thirdDay = new Weather();
-        coordinates = "";
     }
 
     // Three Parameter Constructor
@@ -72,7 +66,6 @@ public class ThreeDayWeather implements Parcelable {
         firstDay = firstDayIn;
         secondDay = secondDayIn;
         thirdDay = thirdDayIn;
-        coordinates = coordinatesIn;
     }
 
     @Override

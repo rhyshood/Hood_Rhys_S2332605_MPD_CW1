@@ -174,18 +174,19 @@ public class RSSManager {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Weather Details");
                             splitWeatherData(temp, xpp.nextText());
+                            }
+                        }
+                    } else if (xpp.getName().equalsIgnoreCase("Point")) {
+                        if(readingItem) {
+                            Log.d("Data Parsing", "Found Location Coordinates");
+                            temp.setCoordinates(xpp.nextText());
+
                             if (dayNumber == 1) {
                                 threeDayWeather.setFirstDay(temp);
                             } else if (dayNumber == 2) {
                                 threeDayWeather.setSecondDay(temp);
                             } else if (dayNumber == 3) {
                                 threeDayWeather.setThirdDay(temp);
-                            }
-                        }
-                    } else if (xpp.getName().equalsIgnoreCase("Point")) {
-                        if(readingItem) {
-                            Log.d("Data Parsing", "Found Location Coordinates");
-                            threeDayWeather.setCoordinates(xpp.nextText());
                         }
                     }
 
@@ -202,4 +203,53 @@ public class RSSManager {
         }
         return threeDayWeather;
     }
+    public Weather createWeatherClass(String dataInput) {
+        Log.d("Data Parsing", "Creating Single Weather Class");
+        Weather temp = new Weather();
+        boolean readingItem = false;
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(dataInput.replace("&","&amp;")));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equalsIgnoreCase("Item")) {
+                        Log.d("Data Parsing", "Item found");
+                        readingItem = true;
+                        temp.setDate(new Date());
+                    } else if (xpp.getName().equalsIgnoreCase("Title")) {
+                        if(readingItem) {
+                            Log.d("Data Parsing", "Found Weather Title");
+                            String forecast = xpp.nextText().split(",")[0];
+                            temp.setForecast(forecast);
+                            fetchForecastImage(temp, forecast);
+                        }
+                    } else if (xpp.getName().equalsIgnoreCase("Description")) {
+                        if(readingItem) {
+                            Log.d("Data Parsing", "Found Weather Details");
+                            splitWeatherData(temp, xpp.nextText());
+                        }
+                    } else if (xpp.getName().equalsIgnoreCase("Point")) {
+                        if(readingItem) {
+                            Log.d("Data Parsing", "Found Location Coordinates");
+                            temp.setCoordinates(xpp.nextText());
+                        }
+                    }
+
+                } else if(eventType == XmlPullParser.END_TAG){
+                    if (xpp.getName().equalsIgnoreCase("Item")) {
+                        Log.d("Data Parsing", "Finished Item");
+                        readingItem = false;
+                    }
+                }
+                eventType = xpp.next();
+            }
+        } catch (XmlPullParserException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return temp;
+    }
+
 }

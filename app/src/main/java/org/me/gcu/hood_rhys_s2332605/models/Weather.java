@@ -24,6 +24,7 @@ public class Weather implements Parcelable {
     private String sunrise;
     private String sunset;
     private Date date;
+    private String coordinates;
 
     protected Weather(Parcel in) {
         minTemp = in.readString();
@@ -40,6 +41,7 @@ public class Weather implements Parcelable {
         sunrise = in.readString();
         sunset = in.readString();
         date = (java.util.Date) in.readSerializable();
+        coordinates = in.readString();
     }
 
     public static final Creator<Weather> CREATOR = new Creator<Weather>() {
@@ -92,6 +94,7 @@ public class Weather implements Parcelable {
     public String getSunset() { return sunset; }
     public String getSunrise() { return sunrise; }
     public Date getDate() { return date; }
+    public String getCoordinates(){ return coordinates; }
 
     // Setters
     public void setMinTemp(String tempIn){
@@ -134,6 +137,7 @@ public class Weather implements Parcelable {
         sunset = sunsetIn;
     }
     public void setDate(Date dateIn) { date = dateIn; }
+    public void setCoordinates(String coordinatesIn){ coordinates = coordinatesIn;}
 
     // Constructor
 
@@ -153,10 +157,11 @@ public class Weather implements Parcelable {
         sunset = "";
         sunrise = "";
         date = new Date();
+        coordinates = "";
     }
 
     // 13 Parameter Constructor
-    Weather(String minTempIn, String maxTempIn, String forecastIn, String forecastImageIn, String windDirectionIn, String windSpeedIn, String visibilityIn, String airPressureIn, String humidityIn, String uvRiskIn, String pollutionIn, String sunsetIn, String sunriseIn, Date dateIn){
+    Weather(String minTempIn, String maxTempIn, String forecastIn, String forecastImageIn, String windDirectionIn, String windSpeedIn, String visibilityIn, String airPressureIn, String humidityIn, String uvRiskIn, String pollutionIn, String sunsetIn, String sunriseIn, Date dateIn, String coordinatesIn){
         minTemp = minTempIn;
         maxTemp = maxTempIn;
         forecast = forecastIn;
@@ -171,6 +176,7 @@ public class Weather implements Parcelable {
         sunset = sunsetIn;
         sunrise = sunriseIn;
         date = dateIn;
+        coordinates = coordinatesIn;
     }
 
     @Override
@@ -194,6 +200,7 @@ public class Weather implements Parcelable {
         dest.writeString(sunrise);
         dest.writeString(sunset);
         dest.writeSerializable(date);
+        dest.writeString(coordinates);
     }
 
     public String getFormattedDate(){
