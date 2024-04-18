@@ -12,6 +12,7 @@
 
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -29,6 +30,13 @@ import android.widget.ViewFlipper;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.me.gcu.hood_rhys_s2332605.R;
 import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
@@ -41,7 +49,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class ThreeDayViewModel extends AppCompatActivity implements OnClickListener
+public class ThreeDayViewModel extends AppCompatActivity implements OnClickListener, OnMapReadyCallback
 {
     private RSSManager rssManager = new RSSManager();
     // Initialise Text Views
@@ -74,6 +82,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     private String[] locationIDs = {"2648579","2643743","5128581","287286","934154","1185241"};
     private int selectedIndex = 0;
     private String urlSource="https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2648579";
+    private GoogleMap mMap;
 
     private String result;
     private ThreeDayWeather threeDayWeather;
@@ -220,6 +229,16 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         });
     }
 
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        float zoom = 10;
+        // Add a marker in Sydney and move the camera
+        LatLng selectedLocation = new LatLng(threeDayWeather.getFirstDay().getLatitude(), threeDayWeather.getFirstDay().getLongitude());
+        mMap.addMarker(new MarkerOptions().position(selectedLocation).title("Selected Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation,zoom));
+    }
+
     private class Task implements Runnable {
 
         public Task() {
@@ -232,6 +251,9 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
                 @Override
                 public void run() {
                     displayThreeDayWeather();
+                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.map);
+                    mapFragment.getMapAsync(ThreeDayViewModel.this);
                 }
             });
         }

@@ -1,5 +1,6 @@
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,6 +16,13 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.me.gcu.hood_rhys_s2332605.R;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
@@ -33,7 +41,7 @@ import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DetailedViewModel extends AppCompatActivity implements OnClickListener {
+public class DetailedViewModel extends AppCompatActivity implements OnClickListener, OnMapReadyCallback {
     // Text Views
     private TextView maxTempTxt;
     private TextView minTempTxt;
@@ -60,6 +68,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
     private int selectedDay;
     private ThreeDayWeather threeDayWeather;
     private Weather currentWeather;
+    private GoogleMap mMap;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,6 +169,9 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         dateTxt.setText(currentWeather.getFormattedDate());
         forecastImg.setImageResource(getResID(currentWeather.getForecastImage()));
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(DetailedViewModel.this);
     }
 
     public void assignListeners (){
@@ -183,4 +195,13 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
     }
 
 
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        float zoom = 10;
+        // Add a marker in Sydney and move the camera
+        LatLng selectedLocation = new LatLng(currentWeather.getLatitude(), currentWeather.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(selectedLocation).title("Selected Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation,zoom));
+    }
 }

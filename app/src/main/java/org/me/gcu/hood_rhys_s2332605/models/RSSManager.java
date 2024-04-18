@@ -2,7 +2,6 @@ package org.me.gcu.hood_rhys_s2332605.models;
 
 import android.util.Log;
 
-import org.me.gcu.hood_rhys_s2332605.viewModels.ThreeDayViewModel;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -32,6 +31,11 @@ public class RSSManager {
             temp.setForecastImage("cloudy");
         }
     }
+
+    // NEXT TWO METHODS INCLUDE ERROR PREVENTION DUE TO HOW INCONSISTENT THE BBC RSS FEED IS
+    // WHERE THERE IS NO GUARANTEE ALL DATA WILL BE TRANSMITTED
+
+    // VERIFIES DATA HAS BEEN RECEIVED
     private boolean verifyDataExistence(int dataIndex, String forecast){
         if (dataIndex == 1){
             return forecast.contains("Maximum Temperature");
@@ -55,6 +59,8 @@ public class RSSManager {
             return forecast.contains("Sunrise");
         } else if (dataIndex == 11){
             return forecast.contains("Sunset");
+        } else if (dataIndex == 12){
+            return forecast.contains("Temperature");
         } else {
             return false;
         }
@@ -63,7 +69,7 @@ public class RSSManager {
         String[] arr = forecast.split(",");
         int index = 0;
         if (isLatest){
-            if (verifyDataExistence(2, forecast)){
+            if (verifyDataExistence(12, forecast)){
                 temp.setMinTemp(arr[index]);
                 index++;
             } else {
@@ -183,7 +189,7 @@ public class RSSManager {
     }
 
     public ThreeDayWeather createThreeDayWeatherClass(String locationID) {
-        String dataInput = getDataString(true, locationID);
+        String dataInput = getDataString(false, locationID);
         Log.d("Data Parsing", "Creating Three Day Weather Class");
         int dayNumber = 0;
         Weather temp = new Weather();
@@ -219,11 +225,13 @@ public class RSSManager {
                             Log.d("Data Parsing", "Found Weather Details");
                             splitWeatherData(temp, xpp.nextText(), false);
                             }
-                        }
+
                     } else if (xpp.getName().equalsIgnoreCase("Point")) {
-                        if(readingItem) {
+                        if (readingItem) {
                             Log.d("Data Parsing", "Found Location Coordinates");
-                            temp.setCoordinates(xpp.nextText());
+                            String[] coordinates = xpp.nextText().split(" ");
+                            temp.setLatitude(Double.parseDouble(coordinates[0]));
+                            temp.setLongitude(Double.parseDouble(coordinates[1]));
 
                             if (dayNumber == 1) {
                                 threeDayWeather.setFirstDay(temp);
@@ -231,9 +239,9 @@ public class RSSManager {
                                 threeDayWeather.setSecondDay(temp);
                             } else if (dayNumber == 3) {
                                 threeDayWeather.setThirdDay(temp);
+                            }
                         }
                     }
-
                 } else if(eventType == XmlPullParser.END_TAG){
                     if (xpp.getName().equalsIgnoreCase("Item")) {
                         Log.d("Data Parsing", "Finished Item");
@@ -280,7 +288,9 @@ public class RSSManager {
                     } else if (xpp.getName().equalsIgnoreCase("Point")) {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Location Coordinates");
-                            temp.setCoordinates(xpp.nextText());
+                            String[] coordinates = xpp.nextText().split(" ");
+                            temp.setLatitude(Double.parseDouble(coordinates[0]));
+                            temp.setLongitude(Double.parseDouble(coordinates[1]));
                         }
                     }
 
