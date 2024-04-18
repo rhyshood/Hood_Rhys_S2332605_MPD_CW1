@@ -12,6 +12,7 @@ public class Weather implements Parcelable {
     // Attributes
     private String minTemp;
     private String maxTemp;
+    private String temp;
     private String forecast;
     private String forecastImage;
     private String windDirection;
@@ -29,6 +30,7 @@ public class Weather implements Parcelable {
     protected Weather(Parcel in) {
         minTemp = in.readString();
         maxTemp = in.readString();
+        temp = in.readString();
         forecast = in.readString();
         forecastImage = in.readString();
         windDirection = in.readString();
@@ -62,6 +64,9 @@ public class Weather implements Parcelable {
     }
     public String getMaxTemp(){
         return maxTemp;
+    }
+    public String getTemp(){
+        return temp;
     }
     public String getForecast(){
         return forecast;
@@ -102,6 +107,9 @@ public class Weather implements Parcelable {
     }
     public void setMaxTemp(String tempIn){
         maxTemp = tempIn;
+    }
+    public void setTemp(String tempIn){
+        temp = tempIn;
     }
     public void setForecast(String forecastIn){
         forecast = forecastIn;
@@ -145,6 +153,7 @@ public class Weather implements Parcelable {
     public Weather(){
         minTemp = "";
         maxTemp = "";
+        temp = "";
         forecast = "";
         forecastImage = "cloudy";
         windDirection = "";
@@ -160,10 +169,24 @@ public class Weather implements Parcelable {
         coordinates = "";
     }
 
+    // Constructor for Latest Observations
+    public Weather(String tempIn){
+        temp = "";
+        forecast = "";
+        forecastImage = "cloudy";
+        windDirection = "";
+        windSpeed = "";
+        visibility = "";
+        airPressure = "";
+        humidity = "";
+        date = new Date();
+        coordinates = "";
+    }
     // 13 Parameter Constructor
-    Weather(String minTempIn, String maxTempIn, String forecastIn, String forecastImageIn, String windDirectionIn, String windSpeedIn, String visibilityIn, String airPressureIn, String humidityIn, String uvRiskIn, String pollutionIn, String sunsetIn, String sunriseIn, Date dateIn, String coordinatesIn){
+    Weather(String minTempIn, String maxTempIn, String tempIn, String forecastIn, String forecastImageIn, String windDirectionIn, String windSpeedIn, String visibilityIn, String airPressureIn, String humidityIn, String uvRiskIn, String pollutionIn, String sunsetIn, String sunriseIn, Date dateIn, String coordinatesIn){
         minTemp = minTempIn;
         maxTemp = maxTempIn;
+        temp = tempIn;
         forecast = forecastIn;
         forecastImage = forecastImageIn;
         windDirection = windDirectionIn;
@@ -188,6 +211,7 @@ public class Weather implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(minTemp);
         dest.writeString(maxTemp);
+        dest.writeString(temp);
         dest.writeString(forecast);
         dest.writeString(forecastImage);
         dest.writeString(windDirection);

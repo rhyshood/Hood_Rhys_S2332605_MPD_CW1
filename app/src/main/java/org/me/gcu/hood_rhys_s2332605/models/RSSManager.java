@@ -59,87 +59,131 @@ public class RSSManager {
             return false;
         }
     }
-    private void splitWeatherData(Weather temp, String forecast){
+    private void splitWeatherData(Weather temp, String forecast, boolean isLatest){
         String[] arr = forecast.split(",");
         int index = 0;
-        if (verifyDataExistence(1, forecast)){
-            temp.setMaxTemp(arr[index]);
-            index++;
-        } else {
-            temp.setMaxTemp("Maximum Temperature: Error");
-        }
+        if (isLatest){
+            if (verifyDataExistence(2, forecast)){
+                temp.setMinTemp(arr[index]);
+                index++;
+            } else {
+                temp.setMinTemp("Temperature: Error");
+            }
 
-        if (verifyDataExistence(2, forecast)){
-            temp.setMinTemp(arr[index]);
-            index++;
-        } else {
-            temp.setMinTemp("Minimum Temperature: Error");
-        }
+            if (verifyDataExistence(3, forecast)){
+                temp.setWindDirection(arr[index]);
+                index++;
+            } else {
+                temp.setWindDirection("Wind Direction: Error");
+            }
 
-        if (verifyDataExistence(3, forecast)){
-            temp.setWindDirection(arr[index]);
-            index++;
-        } else {
-            temp.setWindDirection("WindDirection: Error");
-        }
+            if (verifyDataExistence(4, forecast)){
+                temp.setWindSpeed(arr[index]);
+                index++;
+            } else {
+                temp.setWindSpeed("Wind Speed: Error");
+            }
 
-        if (verifyDataExistence(4, forecast)){
-            temp.setWindSpeed(arr[index]);
-            index++;
-        } else {
-            temp.setWindSpeed("Wind Speed: Error");
-        }
+            if (verifyDataExistence(5, forecast)){
+                temp.setVisibility(arr[index]);
+                index++;
+            } else {
+                temp.setVisibility("Visibility: Error");
+            }
 
-        if (verifyDataExistence(5, forecast)){
-            temp.setVisibility(arr[index]);
-            index++;
-        } else {
-            temp.setVisibility("Visibility: Error");
-        }
+            if (verifyDataExistence(6, forecast)){
+                temp.setAirPressure(arr[index] + "," + arr[index + 1]);
+                index = index + 2;
+            } else {
+                temp.setAirPressure("Pressure: Error");
+            }
 
-        if (verifyDataExistence(6, forecast)){
-            temp.setAirPressure(arr[index]);
-            index++;
-        } else {
-            temp.setAirPressure("Pressure: Error");
-        }
+            if (verifyDataExistence(7, forecast)){
+                temp.setHumidity(arr[index]);
+            } else {
+                temp.setHumidity("Humidity: Error");
+            }
+        }else{
+            if (verifyDataExistence(1, forecast)){
+                temp.setMaxTemp(arr[index]);
+                index++;
+            } else {
+                temp.setMaxTemp("Maximum Temperature: Error");
+            }
 
-        if (verifyDataExistence(7, forecast)){
-            temp.setHumidity(arr[index]);
-            index++;
-        } else {
-            temp.setHumidity("Humidity: Error");
-        }
+            if (verifyDataExistence(2, forecast)){
+                temp.setMinTemp(arr[index]);
+                index++;
+            } else {
+                temp.setMinTemp("Minimum Temperature: Error");
+            }
 
-        if (verifyDataExistence(8, forecast)){
-            temp.setUVRisk(arr[index]);
-            index++;
-        } else {
-            temp.setUVRisk("UV Risk: Error");
-        }
+            if (verifyDataExistence(3, forecast)){
+                temp.setWindDirection(arr[index]);
+                index++;
+            } else {
+                temp.setWindDirection("Wind Direction: Error");
+            }
 
-        if (verifyDataExistence(9, forecast)){
-            temp.setPollution(arr[index]);
-            index++;
-        } else {
-            temp.setPollution("Pollution: Error");
-        }
+            if (verifyDataExistence(4, forecast)){
+                temp.setWindSpeed(arr[index]);
+                index++;
+            } else {
+                temp.setWindSpeed("Wind Speed: Error");
+            }
 
-        if (verifyDataExistence(10, forecast)){
-            temp.setSunrise(arr[index]);
-            index++;
-        } else {
-            temp.setSunrise("Sunrise: Error");
-        }
+            if (verifyDataExistence(5, forecast)){
+                temp.setVisibility(arr[index]);
+                index++;
+            } else {
+                temp.setVisibility("Visibility: Error");
+            }
 
-        if (verifyDataExistence(11, forecast)){
-            temp.setSunset(arr[index]);
-        } else {
-            temp.setSunset("Sunset: Error");
+            if (verifyDataExistence(6, forecast)){
+                temp.setAirPressure(arr[index]);
+                index++;
+            } else {
+                temp.setAirPressure("Pressure: Error");
+            }
+
+            if (verifyDataExistence(7, forecast)){
+                temp.setHumidity(arr[index]);
+                index++;
+            } else {
+                temp.setHumidity("Humidity: Error");
+            }
+
+            if (verifyDataExistence(8, forecast)){
+                temp.setUVRisk(arr[index]);
+                index++;
+            } else {
+                temp.setUVRisk("UV Risk: Error");
+            }
+
+            if (verifyDataExistence(9, forecast)){
+                temp.setPollution(arr[index]);
+                index++;
+            } else {
+                temp.setPollution("Pollution: Error");
+            }
+
+            if (verifyDataExistence(10, forecast)){
+                temp.setSunrise(arr[index]);
+                index++;
+            } else {
+                temp.setSunrise("Sunrise: Error");
+            }
+
+            if (verifyDataExistence(11, forecast)){
+                temp.setSunset(arr[index]);
+            } else {
+                temp.setSunset("Sunset: Error");
+            }
         }
     }
 
-    public ThreeDayWeather createThreeDayWeatherClass(String dataInput) {
+    public ThreeDayWeather createThreeDayWeatherClass(String locationID) {
+        String dataInput = getDataString(true, locationID);
         Log.d("Data Parsing", "Creating Three Day Weather Class");
         int dayNumber = 0;
         Weather temp = new Weather();
@@ -173,7 +217,7 @@ public class RSSManager {
                     } else if (xpp.getName().equalsIgnoreCase("Description")) {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Weather Details");
-                            splitWeatherData(temp, xpp.nextText());
+                            splitWeatherData(temp, xpp.nextText(), false);
                             }
                         }
                     } else if (xpp.getName().equalsIgnoreCase("Point")) {
@@ -203,9 +247,11 @@ public class RSSManager {
         }
         return threeDayWeather;
     }
-    public Weather createWeatherClass(String dataInput) {
+
+    public Weather createWeatherClass(String locationID) {
+        String dataInput = getDataString(true, locationID);
         Log.d("Data Parsing", "Creating Single Weather Class");
-        Weather temp = new Weather();
+        Weather temp = new Weather("0");
         boolean readingItem = false;
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -229,7 +275,7 @@ public class RSSManager {
                     } else if (xpp.getName().equalsIgnoreCase("Description")) {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Weather Details");
-                            splitWeatherData(temp, xpp.nextText());
+                            splitWeatherData(temp, xpp.nextText(), true);
                         }
                     } else if (xpp.getName().equalsIgnoreCase("Point")) {
                         if(readingItem) {
@@ -250,6 +296,45 @@ public class RSSManager {
             throw new RuntimeException(e);
         }
         return temp;
+    }
+
+    public String getDataString(boolean isLatest, String locationID){
+
+        String url = "";
+        String result = "";
+        if (isLatest){
+            url = "https://weather-broker-cdn.api.bbci.co.uk/en/observation/rss/" + locationID;
+        } else {
+            url = "https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/" + locationID;
+        }
+
+        URL aurl;
+        URLConnection yc;
+        BufferedReader in = null;
+        String inputLine = "";
+        result = "";
+
+        Log.e("MyTag", "in run");
+
+        try {
+            Log.e("MyTag", "in try");
+            aurl = new URL(url);
+            yc = aurl.openConnection();
+            in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+            while ((inputLine = in.readLine()) != null) {
+                result = result + inputLine;
+                Log.e("MyTag", inputLine);
+            }
+            in.close();
+        } catch (IOException ae) {
+            Log.e("MyTag", "ioexception");
+        }
+
+        //Get rid of the first tag <?xml version="1.0" encoding="utf-8"?>
+        int i = result.indexOf(">");
+        result = result.substring(i + 1);
+        Log.e("MyTag - cleaned", result);
+        return result;
     }
 
 }

@@ -32,41 +32,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="25sp"
-            android:text="Welcome to the GCU Weather App!" />
+            android:textAlignment="center"
+            android:text="Settings Menu" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="20dp" />
 
-        <TextView
-            android:id="@+id/messageTxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Please select your choice:" />
-
         <Button
-            android:id="@+id/threeDayBtn"
+            android:id="@+id/returnBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Three Day Forecast" />
-
-        <Button
-            android:id="@+id/latestBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Latest Observations" />
-
-        <Button
-            android:id="@+id/settingsBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Settings" />
-
-        <Button
-            android:id="@+id/exitBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Exit Application" />
+            android:text="Return to Menu" />
     </LinearLayout>
 </ScrollView>

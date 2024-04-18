@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".viewModels.SettingsViewModel"
+            android:exported="false" />
+        <activity
             android:name=".viewModels.LatestObservationViewModel"
             android:exported="false" />
         <activity

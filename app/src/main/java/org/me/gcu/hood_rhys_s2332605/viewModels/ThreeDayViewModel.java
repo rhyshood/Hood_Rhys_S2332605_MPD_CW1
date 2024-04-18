@@ -187,7 +187,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         locationNameTxt.setText(locationNames[selectedIndex]);
 
         // Run network access on a separate thread;
-        new Thread(new Task("https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/" + locationIDs[selectedIndex])).start();
+        new Thread(new Task()).start();
     }
 
     private int getResID(String iconName){
@@ -221,43 +221,19 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     }
 
     private class Task implements Runnable {
-        private String url;
 
-        public Task(String aurl) {
-            url = aurl;
+        public Task() {
         }
 
         @Override
         public void run() {
-
-            URL aurl;
-            URLConnection yc;
-            BufferedReader in = null;
-            String inputLine = "";
-            result = "";
-
-            Log.e("MyTag", "in run");
-
-            try {
-                Log.e("MyTag", "in try");
-                aurl = new URL(url);
-                yc = aurl.openConnection();
-                in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                while ((inputLine = in.readLine()) != null) {
-                    result = result + inputLine;
-                    Log.e("MyTag", inputLine);
+            threeDayWeather = rssManager.createThreeDayWeatherClass(locationIDs[selectedIndex]);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    displayThreeDayWeather();
                 }
-                in.close();
-            } catch (IOException ae) {
-                Log.e("MyTag", "ioexception");
-            }
-
-            //Get rid of the first tag <?xml version="1.0" encoding="utf-8"?>
-            int i = result.indexOf(">");
-            result = result.substring(i + 1);
-            Log.e("MyTag - cleaned", result);
-            threeDayWeather = rssManager.createThreeDayWeatherClass(result);
-            displayThreeDayWeather();
+            });
         }
 
     }

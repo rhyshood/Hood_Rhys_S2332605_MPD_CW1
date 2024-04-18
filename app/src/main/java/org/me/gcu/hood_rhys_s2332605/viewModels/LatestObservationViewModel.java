@@ -111,7 +111,7 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
             locationTxt.setText(locationNames[selectedIndex]);
 
             // Run network access on a separate thread;
-            new Thread(new Task("https://weather-broker-cdn.api.bbci.co.uk/en/observation/rss/" + locationIDs[selectedIndex])).start();
+            new Thread(new Task()).start();
         }
     private int getResID(String iconName){
         return getResources().getIdentifier(iconName , "drawable", getPackageName());
@@ -140,50 +140,15 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
         locationLeftBtn.setOnClickListener(this);
     }
         class Task implements Runnable {
-        private String url;
-        private String result;
-        public Task(String aurl) {
-            url = aurl;
-        }
+        public Task() {}
 
         @Override
         public void run() {
-
-            URL aurl;
-            URLConnection yc;
-            BufferedReader in = null;
-            String inputLine = "";
-            result = "";
-
-            Log.e("MyTag", "in run");
-
-            try {
-                Log.e("MyTag", "in try");
-                aurl = new URL(url);
-                yc = aurl.openConnection();
-                in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                while ((inputLine = in.readLine()) != null) {
-                    result = result + inputLine;
-                    Log.e("MyTag", inputLine);
-                }
-                in.close();
-            } catch (IOException ae) {
-                Log.e("MyTag", "ioexception");
-            }
-
-            //Get rid of the first tag <?xml version="1.0" encoding="utf-8"?>
-            int i = result.indexOf(">");
-            result = result.substring(i + 1);
-            Log.e("MyTag - cleaned", result);
-            currentWeather = rssManager.createWeatherClass(result);
+            currentWeather = rssManager.createWeatherClass(locationIDs[selectedIndex]);
             runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
-
-
                     displayData();
-
                 }
             });
         }
