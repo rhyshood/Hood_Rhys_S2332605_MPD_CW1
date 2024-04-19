@@ -1,14 +1,8 @@
-/*  Starter project for Mobile Platform Development in main diet 2023/2024
-    You should use this project as the starting point for your assignment.
-    This project simply reads the data from the required URL and displays the
-    raw data in a TextField
-*/
-
-//
-// Name                 Rhys Hood
-// Student ID           S2332605
-// Programme of Study   BSc (Hons) Computing
-//
+///////////////////////////////////////////////
+// Name                 Rhys Hood            //
+// Student ID           S2332605             //
+// Programme of Study   BSc (Hons) Computing //
+///////////////////////////////////////////////
 
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 

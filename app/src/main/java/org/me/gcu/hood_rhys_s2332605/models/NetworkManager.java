@@ -1,3 +1,8 @@
+///////////////////////////////////////////////
+// Name                 Rhys Hood            //
+// Student ID           S2332605             //
+// Programme of Study   BSc (Hons) Computing //
+///////////////////////////////////////////////
 package org.me.gcu.hood_rhys_s2332605.models;
 
 import android.app.Service;
