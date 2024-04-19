@@ -21,26 +21,27 @@ import java.util.Objects;
 import java.util.logging.LogRecord;
 
 public class NetworkManager extends Service {
-
+    // Initializes Variables
     private static final String TAG = "NetworkService";
     private boolean isRunning = false;
     private final Handler handler = new Handler();
     private String previousStatus = "";
+
+    // RUNS WHEN INSTANCE CREATED
     @Override
     public void onCreate() {
         super.onCreate();
+        // Sets Running to True
         isRunning = true;
-        startRepeatingTask();
+        // Begins Network Check
+        runnable.run();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
-
+    // RUNS WHEN STOP SERVICE IS CALLED
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Sets Running to false
         isRunning = false;
     }
 
@@ -49,41 +50,56 @@ public class NetworkManager extends Service {
         return null;
     }
 
+    // NETWORK CHECKER RUNNABLE
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
+            // Checks if network is available
             if (isNetworkAvailable()) {
+                // If so, checks if network status has changed
+                // This check prevents logs being filled with network updates
                 if (!Objects.equals(previousStatus, "Available")) {
+                    // If so, logs the network change and updates previous state
                     previousStatus = "Available";
                     Log.d(TAG, "Internet connection available");
                 }
-                // Notify activities about internet connection
-                Intent intent = new Intent("network_status_changed");
+                // Creates new intent called network_status
+                Intent intent = new Intent("network_status");
+                // Adds boolean to intent called is_connected that is set to true
                 intent.putExtra("is_connected", true);
+                // Broadcasts the intent
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             } else {
+                // If so, checks if network status has changed
+                // This check prevents logs being filled with network updates
                 if(!Objects.equals(previousStatus, "Not Available")){
+                    // If so, logs the network change and updates previous state
                     previousStatus = "Not Available";
                     Log.d(TAG, "No internet connection");
                 }
-                // Notify activities about no internet connection
-                Intent intent = new Intent("network_status_changed");
+                // Adds boolean to intent called is_connected that is set to true
+                Intent intent = new Intent("network_status");
+                // Adds boolean to intent called is_connected that is set to true
                 intent.putExtra("is_connected", false);
+                // Broadcasts the intent
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             }
+            // Checks if Network Checker should still be running
             if(isRunning) {
+                // If so, runs runnable again after 3 seconds
                 handler.postDelayed(this, 3000);
             }
         }
     };
 
-    void startRepeatingTask() {
-        runnable.run();
-    }
-
+    // CHECKS THAT NETWORK IS AVAILABLE
     boolean isNetworkAvailable() {
+        // Fetches network connectivity manager
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Fetches current network information
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        // Returns true if there is any information available and activeNetworkInfo.isConnected returns true
+        // False for either of these means there is not a valid connection
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

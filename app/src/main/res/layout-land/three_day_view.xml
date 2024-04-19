@@ -38,7 +38,7 @@
 
             <Button
                 android:id="@+id/locationLeftBtn"
-                android:layout_width="71dp"
+                android:layout_width="85dp"
                 android:layout_height="wrap_content"
                 android:text="Left" />
 
@@ -52,7 +52,7 @@
 
             <Button
                 android:id="@+id/locationRightBtn"
-                android:layout_width="71dp"
+                android:layout_width="85dp"
                 android:layout_height="wrap_content"
                 android:text="Right" />
 

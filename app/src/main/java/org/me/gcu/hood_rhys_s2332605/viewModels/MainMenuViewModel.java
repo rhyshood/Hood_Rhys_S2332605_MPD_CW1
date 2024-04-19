@@ -31,7 +31,6 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
     private Button threeDayBtn;
     private Button latestBtn;
     private Button exitBtn;
-    private Button settingBtn;
     private Intent networkManager;
     private Handler handler = new Handler();
     private boolean dialogOpen = false;
@@ -41,7 +40,6 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu_view);
         Toolbar myToolbar = findViewById(R.id.toolbar);
-        startService(new Intent(this, NetworkManager.class));
         setSupportActionBar(myToolbar);
         networkManager = new Intent(this, NetworkManager.class);
         findElements();
@@ -50,7 +48,7 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
 
     private void startNetworkListener(){
         startService(networkManager);
-        IntentFilter filter = new IntentFilter("network_status_changed");
+        IntentFilter filter = new IntentFilter("network_status");
         LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
@@ -70,10 +68,8 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
             stopService(networkManager);
             startActivity(latestView);
             this.finish();
-        } else if (v == exitBtn){
+        } else if (v == exitBtn) {
             stopService(networkManager);
-            this.finish();
-        } else if (v == settingBtn){
             this.finish();
         }
     }
@@ -82,14 +78,12 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
         threeDayBtn = findViewById(R.id.threeDayBtn);
         latestBtn = findViewById(R.id.latestBtn);
         exitBtn = findViewById(R.id.exitBtn);
-        settingBtn = findViewById(R.id.settingsBtn);
     }
 
     private void setListeners(){
         threeDayBtn.setOnClickListener(this);
         latestBtn.setOnClickListener(this);
         exitBtn.setOnClickListener(this);
-        settingBtn.setOnClickListener(this);
         startNetworkListener();
     }
 
@@ -106,7 +100,7 @@ public class MainMenuViewModel extends AppCompatActivity implements View.OnClick
                         startNetworkListener();
                         dialogOpen = false;
                     }
-                }, 2000);
+                }, 1000);
             }
         });
 

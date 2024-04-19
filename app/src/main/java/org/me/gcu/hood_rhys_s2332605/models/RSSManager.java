@@ -25,83 +25,140 @@ import java.util.Locale;
 
 public class RSSManager {
 
+    // SETS FORECAST IMAGE FOR WEATHER CLASS
     private void fetchForecastImage(Weather temp, String forecast){
+        // Forecast variable relates to title tag from RSS Feed (Example Data: Today: Light Cloud, Minimum Temperature: 4°C (39°F) Maximum Temperature: 8°C (46°F))
+        // This sets forecast to first part of this input ("Today: Light Cloud")
         forecast = forecast.split(": ")[1];
+        // Checks if forecast contains Light Cloud
         if (forecast.equalsIgnoreCase("Light Cloud")){
+            // If so, set forecast image to partial cloud image
             temp.setForecastImage("day_partial_cloud");
+        // Checks if forecast contains Cloudy
         } else if (forecast.contains("Cloudy")){
+            // If so, set forecast image to cloudy
             temp.setForecastImage("cloudy");
+        // Checks if forecast contains Rain
         } else if (forecast.contains("Rain")){
+            // If so, set forecast image to rain
             temp.setForecastImage("day_rain");
+        // Checks if forecast contains Snow
         } else if (forecast.contains("Snow")){
-            temp.setForecastImage("day_snow");
+            // If so, set forecast image to snow
+            temp.setForecastImage("snow");
+        // If forecast is missing data
         } else {
+            // Set forecast image to default cloudy
             temp.setForecastImage("cloudy");
         }
     }
 
-    // NEXT TWO METHODS INCLUDE ERROR PREVENTION DUE TO HOW INCONSISTENT THE BBC RSS FEED IS
-    // WHERE THERE IS NO GUARANTEE ALL DATA WILL BE TRANSMITTED
+    // NEXT TWO METHODS INCLUDE ERROR HANDLING DUE TO HOW INCONSISTENT THE BBC RSS FEED IS
+    // WHERE THERE IS NO GUARANTEE ALL DATA WILL BE TRANSMITTED. THIS WILL DETECT WHAT
+    // DATA IS MISSING AND HANDLE THEM APPROPRIATELY.
 
     // VERIFIES DATA HAS BEEN RECEIVED
     private boolean verifyDataExistence(int dataIndex, String forecast){
+        // All forecast data across both 3 Day and Latest is assigned a number from 1 to 12
+        // The developer can use this method with that number and the forecast string from the description tag
+        // To verify that the data has actually been received
+
+        // Maximum Temperature = 1
         if (dataIndex == 1){
+            // Returns true if Maximum Temperature has been transmitted
             return forecast.contains("Maximum Temperature");
+        // Minimum Temperature = 2
         } else if (dataIndex == 2){
+            // Returns true if Minimum Temperature has been transmitted
             return forecast.contains("Minimum Temperature");
+        // Wind Direction = 3
         } else if (dataIndex == 3){
+            // Returns true if Wind Direction has been transmitted
             return forecast.contains("Wind Direction");
+        // Wind Speed = 4
         } else if (dataIndex == 4){
+            // Returns true if Wind Speed has been transmitted
             return forecast.contains("Wind Speed");
+        // Visibility = 5
         } else if (dataIndex == 5){
+            // Returns true if Visibility has been transmitted
             return forecast.contains("Visibility");
+        // Pressure = 6
         } else if (dataIndex == 6){
+            // Returns true if Pressure has been transmitted
             return forecast.contains("Pressure");
+        // Humidity = 7
         } else if (dataIndex == 7){
+            // Returns true if Humidity has been transmitted
             return forecast.contains("Humidity");
+        // UV Risk = 8
         } else if (dataIndex == 8){
+            // Returns true if UV Risk has been transmitted
             return forecast.contains("UV Risk");
+        // Pollution = 9
         } else if (dataIndex == 9){
+            // Returns true if Pollution has been transmitted
             return forecast.contains("Pollution");
+        // Sunrise = 10
         } else if (dataIndex == 10){
+            // Returns true if Sunrise has been transmitted
             return forecast.contains("Sunrise");
+        // Sunset = 11
         } else if (dataIndex == 11){
+            // Returns true if Sunset has been transmitted
             return forecast.contains("Sunset");
+        // Temperature = 12
         } else if (dataIndex == 12){
+            // Returns true if Temperature has been transmitted
             return forecast.contains("Temperature");
+        // Anything else returns false
         } else {
             return false;
         }
     }
+
+    // SPLITS WEATHER DATA FROM FULL DESCRIPTION STRING
     private void splitWeatherData(Weather temp, String forecast, boolean isLatest){
+        // Splits full direction string into an array using a comma delimiter (Example Data: Maximum Temperature: 8°C (46°F), Minimum Temperature: 4°C (39°F), Wind Direction: North Easterly, Wind Speed: 9mph, Visibility: Good, Pressure: 1040mb, Humidity: 77%, UV Risk: 1, Pollution: Low, Sunrise: 08:21 GMT, Sunset: 16:14 GMT)
         String[] arr = forecast.split(",");
+        // Sets index to 0
         int index = 0;
+        // If Data is from Latest Observation
         if (isLatest){
+            // Checks if Temperature has been transmitted
             if (verifyDataExistence(12, forecast)){
+                // If so, sets the temp class's temperature and increases index
                 temp.setTemp(arr[index]);
                 index++;
             } else {
+                // If not, sets Temperature as error.
                 temp.setTemp("Temperature: Error");
             }
-
+            // Checks if Wind Direction has been transmitted
             if (verifyDataExistence(3, forecast)){
+                // If so, sets the temp class's Wind Direction and increases index
                 temp.setWindDirection(arr[index]);
                 index++;
             } else {
+                // If not, sets Wind Direction as error.
                 temp.setWindDirection("Wind Direction: Error");
             }
-
+            // Checks if Wind Speed has been transmitted
             if (verifyDataExistence(4, forecast)){
+                // If so, sets the Wind Speed and increases index
                 temp.setWindSpeed(arr[index]);
                 index++;
             } else {
+                // If not, sets Wind Speed as error.
                 temp.setWindSpeed("Wind Speed: Error");
             }
-
+            // Checks if Visibility has been transmitted
             if (verifyDataExistence(5, forecast)){
+                // If so, sets the Visibility and increases index
                 temp.setVisibility(arr[index]);
                 index++;
             } else {
+                // If not, sets Visibility as error.
                 temp.setVisibility("Visibility: Error");
             }
 

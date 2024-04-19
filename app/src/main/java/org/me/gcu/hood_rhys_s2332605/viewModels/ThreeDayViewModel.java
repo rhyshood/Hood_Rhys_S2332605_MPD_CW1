@@ -155,6 +155,8 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
            startDetailedView.putExtra("dayOne",threeDayWeather.getFirstDay());
            startDetailedView.putExtra("dayTwo",threeDayWeather.getSecondDay());
            startDetailedView.putExtra("dayThree",threeDayWeather.getThirdDay());
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(networkStatusReceiver);
+            stopService(networkManager);
            startActivity(startDetailedView);
            this.finish();
        }
@@ -162,7 +164,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
 
     private void startNetworkListener(){
         startService(networkManager);
-        IntentFilter filter = new IntentFilter("network_status_changed");
+        IntentFilter filter = new IntentFilter("network_status");
         LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
@@ -290,7 +292,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
                         startNetworkListener();
                         dialogOpen = false;
                     }
-                }, 2000);
+                }, 1000);
             }
         });
 

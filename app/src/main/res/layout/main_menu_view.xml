@@ -62,12 +62,6 @@
             android:text="Latest Observations" />
 
         <Button
-            android:id="@+id/settingsBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Settings" />
-
-        <Button
             android:id="@+id/exitBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

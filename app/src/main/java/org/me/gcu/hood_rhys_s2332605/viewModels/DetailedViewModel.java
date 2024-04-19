@@ -121,7 +121,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
 
     private void startNetworkListener(){
         startService(networkManager);
-        IntentFilter filter = new IntentFilter("network_status_changed");
+        IntentFilter filter = new IntentFilter("network_status");
         LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
@@ -243,7 +243,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
                         startNetworkListener();
                         dialogOpen = false;
                     }
-                }, 2000);
+                }, 1000);
             }
         });
 

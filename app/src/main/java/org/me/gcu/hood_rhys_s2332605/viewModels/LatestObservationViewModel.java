@@ -103,7 +103,7 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
 
     private void startNetworkListener(){
         startService(networkManager);
-        IntentFilter filter = new IntentFilter("network_status_changed");
+        IntentFilter filter = new IntentFilter("network_status");
         LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
@@ -206,7 +206,7 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
                         startNetworkListener();
                         dialogOpen = false;
                     }
-                }, 2000);
+                }, 1000);
             }
         });
 
