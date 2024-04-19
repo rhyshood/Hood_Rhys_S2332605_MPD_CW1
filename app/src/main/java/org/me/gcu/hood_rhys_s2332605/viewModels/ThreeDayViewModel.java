@@ -13,10 +13,17 @@
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.me.gcu.hood_rhys_s2332605.R;
+import org.me.gcu.hood_rhys_s2332605.models.NetworkManager;
 import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
 import org.me.gcu.hood_rhys_s2332605.models.Weather;
@@ -83,6 +91,9 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
     private int selectedIndex = 0;
     private String urlSource="https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2648579";
     private GoogleMap mMap;
+    private Intent networkManager;
+    private Handler handler = new Handler();
+    private boolean dialogOpen = false;
 
     private String result;
     private ThreeDayWeather threeDayWeather;
@@ -99,6 +110,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
             selectedIndex = bundle.getInt("selectedIndex");
         // Set up the raw links to the graphical components
         updateLocation(0);
+        networkManager = new Intent(this, NetworkManager.class);
         findElements();
         setListeners();
         Toolbar myToolbar = findViewById(R.id.toolbar);
@@ -121,7 +133,10 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
             updateLocation(1);
         } else if (v == returnBtn){
             Intent startMainMenu = new Intent(ThreeDayViewModel.this, MainMenuViewModel.class);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(networkStatusReceiver);
+            stopService(networkManager);
             startActivity(startMainMenu);
+            this.finish();
         } else if (v == dayOneBtn || v == dayTwoBtn || v == dayThreeBtn) {
            String id = getResources().getResourceName(v.getId());
            id = id.substring(id.lastIndexOf("/") + 1);
@@ -147,7 +162,14 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
            startDetailedView.putExtra("dayTwo",threeDayWeather.getSecondDay());
            startDetailedView.putExtra("dayThree",threeDayWeather.getThirdDay());
            startActivity(startDetailedView);
+           this.finish();
        }
+    }
+
+    private void startNetworkListener(){
+        startService(networkManager);
+        IntentFilter filter = new IntentFilter("network_status_changed");
+        LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
     private void findElements(){
@@ -183,6 +205,7 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         dayTwoBtn.setOnClickListener(this);
         dayThreeBtn.setOnClickListener(this);
         returnBtn.setOnClickListener(this);
+        startNetworkListener();
     }
 
     private void updateLocation(int change){
@@ -259,4 +282,43 @@ public class ThreeDayViewModel extends AppCompatActivity implements OnClickListe
         }
 
     }
+
+    private void displayNoInternet(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ThreeDayViewModel.this);
+        builder.setMessage("No Internet Connection!"); //message
+        builder.setCancelable(false);
+        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startNetworkListener();
+                        dialogOpen = false;
+                    }
+                }, 2000);
+            }
+        });
+
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                ThreeDayViewModel.this.finish(); //exits app
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    private BroadcastReceiver networkStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = intent.getBooleanExtra("is_connected", false);
+            if (!isConnected) {
+                stopService(networkManager);
+                if(!dialogOpen){
+                    displayNoInternet();
+                    dialogOpen = true;
+                }
+            }
+        }
+    };
 }

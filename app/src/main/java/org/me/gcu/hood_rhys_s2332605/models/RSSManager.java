@@ -70,10 +70,10 @@ public class RSSManager {
         int index = 0;
         if (isLatest){
             if (verifyDataExistence(12, forecast)){
-                temp.setMinTemp(arr[index]);
+                temp.setTemp(arr[index]);
                 index++;
             } else {
-                temp.setMinTemp("Temperature: Error");
+                temp.setTemp("Temperature: Error");
             }
 
             if (verifyDataExistence(3, forecast)){

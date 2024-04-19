@@ -1,10 +1,16 @@
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.me.gcu.hood_rhys_s2332605.R;
+import org.me.gcu.hood_rhys_s2332605.models.NetworkManager;
 import org.me.gcu.hood_rhys_s2332605.models.ThreeDayWeather;
 import org.me.gcu.hood_rhys_s2332605.models.Weather;
 import org.w3c.dom.Text;
@@ -63,12 +70,14 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
     // Misc
     private ImageView forecastImg;
     private String[] locationNames = {"Glasgow", "London", "New York", "Oman", "Mauritius", "Bangladesh"};
-    private String[] locationIDs = {"2648579", "2643743", "5128581", "287286", "934154", "1185241"};
     private int selectedIndex = 0;
     private int selectedDay;
     private ThreeDayWeather threeDayWeather;
     private Weather currentWeather;
     private GoogleMap mMap;
+    private Intent networkManager;
+    private Handler handler = new Handler();
+    private boolean dialogOpen = false;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +98,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         locationName.setText(locationNames[selectedIndex]);
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+        networkManager = new Intent(this, NetworkManager.class);
         assignElements();
         assignListeners();
         updateCurrentWeather(selectedDay);
@@ -102,6 +112,12 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
+    }
+
+    private void startNetworkListener(){
+        startService(networkManager);
+        IntentFilter filter = new IntentFilter("network_status_changed");
+        LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
     }
 
     private void changeDay(int change){
@@ -178,6 +194,7 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         returnBtn.setOnClickListener(this);
         dateRightBtn.setOnClickListener(this);
         dateLeftBtn.setOnClickListener(this);
+        startNetworkListener();
     }
     public void onClick(View v)
     {
@@ -186,7 +203,10 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
             bundle.putInt("selectedIndex",selectedIndex);
             Intent startThreeDayView = new Intent(DetailedViewModel.this, ThreeDayViewModel.class);
             startThreeDayView.putExtras(bundle);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(networkStatusReceiver);
+            stopService(networkManager);
             startActivity(startThreeDayView);
+            this.finish();
         } else if (v == dateRightBtn){
             changeDay(1);
         } else if (v == dateLeftBtn){
@@ -204,4 +224,43 @@ public class DetailedViewModel extends AppCompatActivity implements OnClickListe
         mMap.addMarker(new MarkerOptions().position(selectedLocation).title("Selected Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedLocation,zoom));
     }
+
+    private void displayNoInternet(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(DetailedViewModel.this);
+        builder.setMessage("No Internet Connection!"); //message
+        builder.setCancelable(false);
+        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startNetworkListener();
+                        dialogOpen = false;
+                    }
+                }, 2000);
+            }
+        });
+
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                DetailedViewModel.this.finish(); //exits app
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    private BroadcastReceiver networkStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = intent.getBooleanExtra("is_connected", false);
+            if (!isConnected) {
+                stopService(networkManager);
+                if(!dialogOpen){
+                    displayNoInternet();
+                    dialogOpen = true;
+                }
+            }
+        }
+    };
 }

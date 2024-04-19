@@ -1,7 +1,13 @@
 package org.me.gcu.hood_rhys_s2332605.viewModels;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.IntentFilter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -24,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.me.gcu.hood_rhys_s2332605.R;
+import org.me.gcu.hood_rhys_s2332605.models.NetworkManager;
 import org.me.gcu.hood_rhys_s2332605.models.RSSManager;
 import org.me.gcu.hood_rhys_s2332605.models.Weather;
 
@@ -58,12 +66,16 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
     private String[] locationIDs = {"2648579","2643743","5128581","287286","934154","1185241"};
     private int selectedIndex = 0;
     private GoogleMap mMap;
+    private Intent networkManager;
+    private Handler handler = new Handler();
+    private boolean dialogOpen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.latest_observation_view);
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+        networkManager = new Intent(this, NetworkManager.class);
         assignElements();
         assignListeners();
         updateLocation(0);
@@ -77,10 +89,18 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
             updateLocation(1);
         } else if (v == returnBtn){
             Intent mainMenu = new Intent(LatestObservationViewModel.this, MainMenuViewModel.class);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(networkStatusReceiver);
+            stopService(networkManager);
             startActivity(mainMenu);
+            this.finish();
         }
     }
 
+    private void startNetworkListener(){
+        startService(networkManager);
+        IntentFilter filter = new IntentFilter("network_status_changed");
+        LocalBroadcastManager.getInstance(this).registerReceiver(networkStatusReceiver, filter);
+    }
 
     private void assignElements(){
         // Text Views
@@ -135,6 +155,7 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
         returnBtn.setOnClickListener(this);
         locationRightBtn.setOnClickListener(this);
         locationLeftBtn.setOnClickListener(this);
+        startNetworkListener();
     }
 
     @Override
@@ -166,4 +187,43 @@ public class LatestObservationViewModel extends AppCompatActivity implements Vie
         }
 
     }
+
+    private void displayNoInternet(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(LatestObservationViewModel.this);
+        builder.setMessage("No Internet Connection!"); //message
+        builder.setCancelable(false);
+        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startNetworkListener();
+                        dialogOpen = false;
+                    }
+                }, 2000);
+            }
+        });
+
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                LatestObservationViewModel.this.finish(); //exits app
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    private BroadcastReceiver networkStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isConnected = intent.getBooleanExtra("is_connected", false);
+            if (!isConnected) {
+                stopService(networkManager);
+                if(!dialogOpen){
+                    displayNoInternet();
+                    dialogOpen = true;
+                }
+            }
+        }
+    };
 }
