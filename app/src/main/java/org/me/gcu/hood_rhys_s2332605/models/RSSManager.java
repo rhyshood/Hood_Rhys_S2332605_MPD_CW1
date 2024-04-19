@@ -12,8 +12,11 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class RSSManager {
 
@@ -208,11 +211,6 @@ public class RSSManager {
                         readingItem = true;
                         dayNumber += 1;
                         temp = new Weather();
-                        Date dt = new Date();
-                        Calendar c = Calendar.getInstance();
-                        c.setTime(dt);
-                        c.add(Calendar.DATE, dayNumber - 1);
-                        temp.setDate(c.getTime());
                     } else if (xpp.getName().equalsIgnoreCase("Title")) {
                         if(readingItem) {
                             Log.d("Data Parsing", "Found Weather Title");
@@ -225,6 +223,17 @@ public class RSSManager {
                             Log.d("Data Parsing", "Found Weather Details");
                             splitWeatherData(temp, xpp.nextText(), false);
                             }
+
+                    } else if (xpp.getName().equalsIgnoreCase("Date")) {
+                        if(readingItem) {
+                            Log.d("Data Parsing", "Found Weather Date");
+
+                            Date dt = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'").parse(xpp.nextText());
+                            Calendar c = Calendar.getInstance();
+                            c.setTime(dt);
+                            c.add(Calendar.DATE, dayNumber - 1);
+                            temp.setDate(c.getTime());
+                        }
 
                     } else if (xpp.getName().equalsIgnoreCase("Point")) {
                         if (readingItem) {
@@ -251,6 +260,8 @@ public class RSSManager {
                 eventType = xpp.next();
             }
         } catch (XmlPullParserException | IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
         return threeDayWeather;
